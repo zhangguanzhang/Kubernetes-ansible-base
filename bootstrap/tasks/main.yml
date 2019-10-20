@@ -1,0 +1,10 @@
+- name: 检测bootstrap是否生成
+  stat: path=/etc/kubernetes/bootstrap.kubeconfig
+  register: bootstrap_file
+
+- name: 配置bootstrap
+  script: files/bootstrap.sh {{ KUBE_APISERVER }}
+  args:
+   executable: bash
+  when: not bootstrap_file.stat.exists
+

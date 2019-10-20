@@ -1,0 +1,71 @@
+- name: 创建相关目录
+  file: name={{ item }} state=directory
+  with_items:
+    - /etc/kubernetes/pki
+    - /etc/kubernetes/manifests
+    - /var/lib/kubelet/
+    - /opt/cni/bin/
+  tags:
+    - cni
+
+- name: 删除老旧的kubelet认证文件
+  file: name={{ item }} state=absent
+  with_fileglob:
+    - "/etc/kubernetes/pki/kubelet-client-*"
+
+- name: 分发cni二进制文件
+  unarchive:
+    src: "{{ item }}"
+    dest: /opt/cni/bin/
+    mode: u+x
+  with_fileglob:
+    - "{{ inventory_dir }}/../cni-plugins*amd64*.tgz"
+  tags:
+    - cni
+
+- name: 分发Kubelet二进制文件
+  copy:
+    src: "{{ item }}"
+    dest: "{{ item }}"
+    mode: u+x
+  with_items:
+    - /usr/local/bin/kubelet
+  tags:
+    - bin
+
+- name: 创建log目录
+  file: name={{ kubelet.logrotate.logDir }}/logrotate state=directory
+  when: kubelet.logrotate.log is defined and kubelet.logrotate.log 
+
+- name: 渲染kubelet的logrotate配置文件
+  template: src=templates/{{ item }} dest=/etc/logrotate.d/{{ item.split('/')[-1] }}
+  with_items: "{{ kubelet.logrotate.confTemplate }}"
+  when: kubelet.logrotate.log is defined and kubelet.logrotate.log
+
+- name: 获取docker CgroupDriver值
+  shell: |
+      docker info --format '{% raw %}{{.CgroupDriver}}{% endraw %}'
+  register: CgroupDriver
+   
+- name: 配置kubelet
+  template: src=node/{{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
+  with_items:
+    - { src: 'kubelet.service.j2', dest: "/lib/systemd/system/" }
+    - { src: 'kubelet-conf.yml.j2', dest: "/etc/kubernetes/" }
+
+- name: 分发kubelet相关证书
+  copy: src={{ item }} dest={{ item }}
+  with_items:
+    - /etc/kubernetes/pki/ca.crt
+    - /etc/kubernetes/bootstrap.kubeconfig
+
+- name: 开机并启动kubelet
+  systemd: name=kubelet state=started enabled=yes daemon_reload=yes
+  
+- name: 请给master节点上的kubelet打污点
+  debug: 
+    msg: |
+      kubectl  taint nodes {% for host in groups['master'] %}{{ hostvars[host].nodename }} {% endfor %}  node-role.kubernetes.io/master="":NoSchedule
+  connection: local
+  run_once: true
+  when: not ( newNode | default(false) )

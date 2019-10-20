@@ -1,0 +1,17 @@
+ETCD_CERET_DIR=/etc/kubernetes/pki/etcd/
+ETCD_CA_FILE=ca.crt
+ETCD_KEY_FILE=healthcheck-client.key
+ETCD_CERT_FILE=healthcheck-client.crt
+ETCD_EP={% for host in ansible_play_hosts %}https://{{ hostvars[host].inventory_hostname }}:2379{% if not loop.last %},{% endif %}{% endfor %}
+
+alias etcd_v2="etcdctl --cert-file ${ETCD_CERET_DIR}/${ETCD_CERT_FILE} \
+              --key-file ${ETCD_CERET_DIR}/${ETCD_KEY_FILE}  \
+              --ca-file ${ETCD_CERET_DIR}/${ETCD_CA_FILE}  \
+              --endpoints $ETCD_EP"
+
+alias etcd_v3="ETCDCTL_API=3 \
+    etcdctl   \
+   --cert ${ETCD_CERET_DIR}/${ETCD_CERT_FILE} \
+   --key ${ETCD_CERET_DIR}/${ETCD_KEY_FILE} \
+   --cacert ${ETCD_CERET_DIR}/${ETCD_CA_FILE} \
+    --endpoints $ETCD_EP"

@@ -1,0 +1,53 @@
+- block:
+    - name: 部署kube-proxy
+      template: src={{ item }} dest=/etc/kubernetes/CoreAddons/{{ item.split('.')[:-1]|join('.') }}
+      with_items:
+        - kube-proxy.yml.j2
+    
+    - command: kubectl apply -f /etc/kubernetes/CoreAddons/kube-proxy.yml
+      delegate_to: "{{ groups['master'][0] }}"
+      run_once: true
+  when: not proxy.bin and ( not newNode | default(false) )
+
+- block:
+    - name: 部署Kube-proxy
+      copy: 
+        src: /usr/local/bin/kube-proxy 
+        dest: /usr/local/bin/kube-proxy
+        mode: u+x
+    
+    - stat: 
+        path: /etc/kubernetes/kube-proxy.kubeconfig
+      register: kubeproxy_file
+
+    - name: 生成kube-proxy的kubeconfig并配置
+      script: files/kubeconfig.sh {{ KUBE_APISERVER }}
+      args:
+        executable: bash
+      connection: local
+      run_once: true
+      when: not kubeproxy_file.stat.exists
+    
+    - name: 创建目录{{ proxy.logrotate.logDir }}/logrotate
+      file: name={{ proxy.logrotate.logDir }}/logrotate state=directory
+      when: proxy.logrotate.log is defined and proxy.logrotate.log
+
+    - name: 分发logrotate配置文件
+      template: src={{ item }} dest=/etc/logrotate.d/{{ item.split('/')[-1] }}
+      with_items: "{{ proxy.logrotate.confTemplate }}"
+      when: proxy.logrotate.log is defined and proxy.logrotate.log
+
+    - name: 分发kube-proxy.kubeconfig
+      copy:
+        src: /etc/kubernetes/kube-proxy.kubeconfig
+        dest: /etc/kubernetes/kube-proxy.kubeconfig
+    
+    
+    - template: src={{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
+      with_items:
+        - { src: 'kube-proxy.service.j2', dest: '/usr/lib/systemd/system/' }
+        - { src: 'kube-proxy.conf.j2', dest: '/etc/kubernetes/' }
+    - name: 开机并启动kube-proxy
+      systemd: name=kube-proxy state=started enabled=yes daemon_reload=yes
+      when: not ( redo | default(false) )
+  when: proxy.bin

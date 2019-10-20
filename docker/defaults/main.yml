@@ -1,0 +1,13 @@
+docker:
+  version: 18.06.3
+  dataDir: /var/lib/docker
+  execOpts:
+    - 'native.cgroupdriver=systemd'
+  registryMirrors:
+    - https://fz5yth0r.mirror.aliyuncs.com
+    - https://registry.docker-cn.com
+    - http://hub-mirror.c.163.com/
+    - https://docker.mirrors.ustc.edu.cn/
+#  insecureRegistries:
+#    - 100.64.2.52:9999
+#    - 100.64.1.31:9999

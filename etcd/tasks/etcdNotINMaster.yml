@@ -1,0 +1,8 @@
+- name: Set hostname
+  hostname: name={{ hostname }}
+
+- include_tasks: time/chrony.yml
+  when: ntp_type == "chrony"
+
+- include_tasks: time/ntp.yml
+  when: ntp_type != "chrony"

@@ -1,0 +1,25 @@
+- include: etcdNotINMaster.yml
+  when: ansible_play_hosts | intersect(groups['master']) | length == 0
+
+- include_tasks: etcd.yml
+
+- name: 渲染etcd.sh到/etc/profile.d/
+  template: src=etcd.sh.j2 dest=/etc/profile.d/etcd.sh
+  tags:
+    - etcd-cli
+
+- name: 渲染etcd备份脚本
+  template: src={{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
+  with_items:
+  - { src: 'etcd_cron.sh.j2', dest: '{{ etcd.backup.scriptDir }}/'}
+  tags:
+    - etcd-bak
+
+- name: crontab配置备份脚本
+  cron:
+    name: "etcd crontab backup"
+    minute: "0"
+    hour: "2"
+    job: "bash {{etcd.backup.scriptDir}}/etcd_cron.sh  -c {{etcd.backup.count}} -d {{etcd.backup.dataDir}} > /dev/null "
+  tags:
+    - etcd-bak

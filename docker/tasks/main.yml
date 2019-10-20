@@ -1,0 +1,24 @@
+- name: create the dir for docker
+  file: name=/etc/docker state=directory
+
+- name: populate service facts
+  service_facts:
+
+- include_tasks: centos.yml
+  when: ansible_os_family == "RedHat" and "'docker' not in services"
+
+- name: Check if the completion script exists
+  stat: path=/etc/bash_completion.d/docker
+  register: check_completion_files
+
+- name: Set docker command completion script
+  copy: 
+    src: /usr/share/bash-completion/completions/docker
+    dest: /etc/bash_completion.d/docker
+    remote_src: true
+  when: not check_completion_files.stat.exists
+
+- name: send the config file
+  template: src=daemon.json.j2 dest=/etc/docker/daemon.json
+  notify:
+    - restart docker

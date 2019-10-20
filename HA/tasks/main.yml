@@ -1,0 +1,35 @@
+- name: Install keepalived
+  package: name=keepalived  state=latest
+
+- name: Install haproxy
+  package: name=haproxy  state=latest
+
+- name: Send HA configuration file
+  template: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+  - { src: 'keepalived.conf.j2', dest: '/etc/keepalived/keepalived.conf'}
+  - { src: 'check_haproxy.sh.j2', dest: '/etc/keepalived/check_haproxy.sh'}
+  - { src: 'haproxy.cfg.j2', dest: '/etc/haproxy/haproxy.cfg'}
+
+
+- block:
+    - name: 启动haproxy keepalived
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+        state: restarted
+      with_items:
+        - keepalived
+        - haproxy
+    
+    - wait_for: 
+        host: "{{ VIP }}"
+        delay: 10
+        port: "{{ HA_test_port }}"
+      connection: local
+  when: not ( redo | default(false) )
+
+#- name: ping测试VIP
+#  net_ping:
+#    dest: "{{ VIP }}"
+#  connection: local

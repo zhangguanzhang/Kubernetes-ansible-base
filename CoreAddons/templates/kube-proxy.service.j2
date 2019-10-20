@@ -1,0 +1,20 @@
+[Unit]
+Description=Kubernetes Kube Proxy
+Documentation=https://github.com/kubernetes/kubernetes
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/kube-proxy \
+  --hostname-override={{ nodename | lower }} \
+  --config=/etc/kubernetes/kube-proxy.conf \
+{% if proxy.logrotate.log is defined and proxy.logrotate.log %}
+  --logtostderr=false \
+  --log-dir={{ proxy.logrotate.logDir }} \
+{% endif %}
+  --v={{ proxy.logLevel | default(2) }}
+
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

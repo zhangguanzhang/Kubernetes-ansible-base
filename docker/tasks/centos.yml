@@ -1,0 +1,23 @@
+- name: Add the repo
+  get_url:
+    url: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo 
+  become: yes
+
+- yum: name=yum-utils state=present update_cache=yes
+
+- name: get the info of the docker-ce
+  yum: list=docker-ce
+  register: temp_var
+
+- set_fact: 
+    docker_version={{ temp_var.results | map(attribute='version')| list | select('search', docker.version ) | list | last}}
+
+- name: Check if docker-ce-{{ docker_version }} is installed
+  yum: list=docker-ce-{{ docker_version }}
+  register: pkg
+
+- name: Install docker-ce-{{ docker_version }}
+  yum:
+    name: docker-ce-{{ docker_version }}
+  when: pkg.results | selectattr("yumstate", "match", "installed") | list | length == 0
