@@ -6,7 +6,7 @@
   package: name=chrony state=latest
 
 - name: Send chrony configuration file
-  template: src=time/chrony.conf.j2 dest=/etc/chrony.conf
+  template: src=common/time/chrony.conf.j2 dest=/etc/chrony.conf
 
 - name: 设置chrony开机并启动
   systemd: name=chronyd enabled=yes

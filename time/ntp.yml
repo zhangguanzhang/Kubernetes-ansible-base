@@ -6,7 +6,7 @@
   package: name=ntp state=latest
 
 - name: Send ntp configuration file
-  template: src=time/ntp.conf.j2 dest=/etc/ntp.conf
+  template: src=common/time/ntp.conf.j2 dest=/etc/ntp.conf
 
 - name: 设置ntpd开机并启动
   systemd: name=ntpd enabled=yes
