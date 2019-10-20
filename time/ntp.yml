@@ -1,0 +1,15 @@
+- name: remove chrony
+  package: name=chrony state=absent
+  ignore_errors: True
+
+- name: Install ntp
+  package: name=ntp state=latest
+
+- name: Send ntp configuration file
+  template: src=time/ntp.conf.j2 dest=/etc/ntp.conf
+
+- name: 设置ntpd开机并启动
+  systemd: name=ntpd enabled=yes
+
+- name: Adjust the time
+  shell: ntpdate {{ ntp_servers[0] }}

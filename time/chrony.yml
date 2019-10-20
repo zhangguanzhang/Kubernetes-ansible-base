@@ -1,0 +1,12 @@
+- name: remove ntp
+  package: name=ntp state=absent
+  ignore_errors: True
+
+- name: Install chrony
+  package: name=chrony state=latest
+
+- name: Send chrony configuration file
+  template: src=time/chrony.conf.j2 dest=/etc/chrony.conf
+
+- name: 设置chrony开机并启动
+  systemd: name=chronyd enabled=yes
