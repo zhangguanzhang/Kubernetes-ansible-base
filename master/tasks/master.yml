@@ -39,6 +39,8 @@
     - kube-apiserver.service.j2
     - kube-controller-manager.service.j2
     - kube-scheduler.service.j2
+  tags:
+    - version
 
 - name: 分发管理组件的kubeconfig
   copy: src=/etc/kubernetes/{{ item }} dest=/etc/kubernetes/
@@ -54,6 +56,8 @@
     - /usr/local/bin/kube-controller-manager
     - /usr/local/bin/kube-scheduler
     - /usr/local/bin/kubectl
+  tags:
+    - version
 
 # 当运行剧本的机器不是master的时候让能操作集群
 - file: name=~/.kube state=directory
@@ -77,6 +81,8 @@
 - name: 设置kubectl
   shell: |
     kubectl completion bash > /etc/bash_completion.d/kubectl
+  tags:
+    - version
 
 - name: 启动管理组件
   systemd: name={{ item }} state=restarted enabled=yes daemon_reload=yes
@@ -85,7 +91,8 @@
     - kube-controller-manager
     - kube-scheduler
   when: not ( redo | default(false) )
-  
+  tags:
+    - version
 
 - name: 渲染kube-ep.yml文件
   template: src={{ item }} dest=/etc/kubernetes/{{ item.split('.')[:-1]|join('.') }}
