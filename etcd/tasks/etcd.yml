@@ -17,6 +17,8 @@
   with_items:
     - /usr/local/bin/etcd
     - /usr/local/bin/etcdctl
+  tags:
+    - version
   
 - name: 分发etcd证书
   copy: src={{ item }} dest=/etc/kubernetes/pki/etcd/
@@ -28,6 +30,8 @@
   with_items:
   - { src: 'etcd.config.yml.j2', dest: '/etc/etcd' }
   - { src: 'etcd.service.j2', dest: '/usr/lib/systemd/system' }
+  tags:
+    - version
 
 - name: 启动etcd并设置成开机启动
   systemd:
@@ -36,3 +40,5 @@
     enabled: yes 
     daemon_reload: yes
   when: not ( redo | default(false) )
+  tags:
+    - version

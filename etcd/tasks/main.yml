@@ -2,6 +2,13 @@
   when: ansible_play_hosts | intersect(groups['master']) | length == 0
 
 - include_tasks: etcd.yml
+  tags:
+    - version
+
+- name: localhost |渲染etcd.sh到/etc/profile.d/
+  template: src=etcd.sh.j2 dest=/etc/profile.d/etcd.sh
+  connection: local
+  run_once: true
 
 - name: 渲染etcd.sh到/etc/profile.d/
   template: src=etcd.sh.j2 dest=/etc/profile.d/etcd.sh
