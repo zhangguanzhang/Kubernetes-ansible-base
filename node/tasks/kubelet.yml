@@ -19,7 +19,7 @@
     dest: /opt/cni/bin/
     mode: u+x
   with_fileglob:
-    - "{{ inventory_dir }}/../cni-plugins*amd64*.tgz"
+    - "{{ playbook_dir }}/cni-plugins*amd64*.tgz"
   tags:
     - cni
 

@@ -4,8 +4,14 @@
 - name: populate service facts
   service_facts:
 
+- set_fact:
+    docker_Install_condition: |-
+      {%- if force | d(false) -%}true
+      {%- else -%}{{ "'docker' not in services" }}
+      {%- endif %}
+
 - include_tasks: centos.yml
-  when: ansible_os_family == "RedHat" and "'docker' not in services"
+  when: ansible_os_family == "RedHat" and docker_Install_condition
 
 - name: Check if the completion script exists
   stat: path=/etc/bash_completion.d/docker

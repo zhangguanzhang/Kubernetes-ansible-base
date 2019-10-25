@@ -22,7 +22,7 @@
         - '/etc/kubernetes/pki/etcd/*'
 
     - name: 渲染etcd.sh到/etc/profile.d/
-      template: src="{{ inventory_dir }}/../roles/etcd/templates/etcd.sh.j2" dest=/etc/profile.d/etcd.sh
+      template: src={{ playbook_dir }}/roles/etcd/templates/etcd.sh.j2 dest=/etc/profile.d/etcd.sh
   when: groups['etcd'] is defined and groups['etcd'] | intersect(groups['master']) | length == 0 #交集为0表示etcd非master上
 
 
