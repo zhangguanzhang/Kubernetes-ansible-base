@@ -7,7 +7,7 @@
 - set_fact:
     docker_Install_condition: |-
       {%- if force | d(false) -%}true
-      {%- else -%}{{ "'docker' not in services" }}
+      {%- else -%}{{ service['docker.service'] | default(false) }}
       {%- endif %}
 
 - include_tasks: centos.yml
