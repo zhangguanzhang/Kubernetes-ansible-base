@@ -3,7 +3,7 @@
 function down_kube(){
     [ ! -f kubernetes-server-linux-amd64.tar.gz ] && {
         docker pull zhangguanzhang/k8s_bin:$KUBE_VERSION-full
-        docker run --rm -d --name kube zhangguanzhang/k8s_bin:$KUBE_VERSION-full sleep 10
+        docker run --rm -d --name kube dockerhub.azk8s.cn/zhangguanzhang/k8s_bin:$KUBE_VERSION-full sleep 10
         docker cp kube:/kubernetes-server-linux-amd64.tar.gz .
         tar -zxvf kubernetes-server-linux-amd64.tar.gz  --strip-components=3 -C /usr/local/bin kubernetes/server/bin/kube{let,ctl,-apiserver,-controller-manager,-scheduler,-proxy}
     }
