@@ -22,7 +22,7 @@ initial-cluster: '{% for host in ansible_play_hosts %}{{ hostvars[host].clusterN
 initial-cluster-token: 'etcd-k8s-cluster'
 initial-cluster-state: 'new'
 strict-reconfig-check: false
-enable-v2: true
+enable-v2: false
 enable-pprof: true
 proxy: 'off'
 proxy-failure-wait: 5000
