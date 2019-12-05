@@ -8,7 +8,7 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
 :  {% raw %}${endpoints:={% endraw %}{% for host in ansible_play_hosts %}https://{{ hostvars[host].inventory_hostname }}:2379{% if not loop.last %},{% endif %}{% endfor %}{% raw %}}{% endraw %}
 
 bak_prefix='etcd-'
-cmd_suffix='date +%Y-%m-%d-%H:%M'
+cmd_suffix='date +%Y-%m-%d-%H:%M:%S'
 bak_suffix='.db'
 
 #将规范化后的命令行参数分配至位置参数（$1,$2,...)
