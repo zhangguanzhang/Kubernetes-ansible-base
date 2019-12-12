@@ -69,7 +69,8 @@ function etcd_v3(){
 }
 
 etcd::cron::save(){
-    cd $bak_dir/
+    [ ! -d "$bak_dir" ] && mkdir -p -- "$bak_dir"
+    cd -- $bak_dir/
     etcd_v3 snapshot save  $bak_prefix$($cmd_suffix)$bak_suffix
     rm_files=`ls -t $bak_prefix*$bak_suffix | tail -n +$[bak_count+1]`
     if [ -n "$rm_files" ];then
