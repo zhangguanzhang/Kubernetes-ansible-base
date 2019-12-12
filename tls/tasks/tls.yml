@@ -72,7 +72,6 @@
   shell: |
     openssl genrsa -out etcd/peer.key 2048 && \
       openssl req -new -key etcd/peer.key -subj "/CN=etcd-peer" -out etcd/peer.csr
-    openssl x509 -in etcd/peer.csr -req -CA etcd/ca.crt -CAkey etcd/ca.key -CAcreateserial -extensions v3_req_etcd -extfile openssl.cnf -out etcd/peer.crt -days {{ days }}
   args:
     chdir: /etc/kubernetes/pki/
     executable: /bin/bash
