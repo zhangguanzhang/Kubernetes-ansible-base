@@ -31,8 +31,8 @@ function down_flanneld(){
 function down_cni(){
     [ ! -f cni-plugins-linux-amd64-${CNI_VERSION}.tgz ] && \
 #    wget "${CNI_URL}/${CNI_VERSION}/cni-plugins-linux-amd64-${CNI_VERSION}.tgz" 
-    docker pull zhangguanzhang/cni-plugins:${OS}-${ARCH}-${CNI_VERSION}
-    docker run -d --rm --name cni zhangguanzhang/cni-plugins:${OS}-${ARCH}-${CNI_VERSION} sleep 10
+    docker pull dockerhub.azk8s.cn/zhangguanzhang/cni-plugins:${OS}-${ARCH}-${CNI_VERSION}
+    docker run -d --rm --name cni dockerhub.azk8s.cn/zhangguanzhang/cni-plugins:${OS}-${ARCH}-${CNI_VERSION} sleep 10
     docker cp cni:/cni-plugins-${OS}-${ARCH}-${CNI_VERSION}.tgz .
 }
 
