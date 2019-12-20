@@ -68,6 +68,9 @@
       - tcpdump
       - telnet
       - lsof
+      - nload
+      - strace
+      - iftop
       - htop
       - wget
       - psmisc
@@ -104,6 +107,6 @@
   shell: |
     grubby --args="user_namespace.enable=1" --update-kernel=$(grubby --default-kernel)
 
-- name: 调整cpu到非省电模式
+- name: 物理机下调整cpu到非省电模式
   command: tuned-adm profile throughput-performance
   when: ansible_virtualization_role == 'host'
