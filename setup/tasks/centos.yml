@@ -58,6 +58,7 @@
       - ipset
       - perl           # 内核依赖
       - ipvsadm
+      - iptables
       - conntrack
       - libseccomp
       - net-tools
@@ -70,6 +71,7 @@
       - lsof
       - nload
       - strace
+      - bridge-utils
       - iftop
       - htop
       - wget

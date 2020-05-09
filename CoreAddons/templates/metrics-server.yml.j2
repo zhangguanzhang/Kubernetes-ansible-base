@@ -78,7 +78,7 @@ spec:
       serviceAccountName: metrics-server
       containers:
       - name: metrics-server
-        image: zhangguanzhang/gcr.io.google_containers.metrics-server-amd64:{{ metrics_version }}
+        image: zhangguanzhang/metrics-server:{{ metrics_version }}
         imagePullPolicy: IfNotPresent
         args:
         - --kubelet-preferred-address-types=InternalIP
