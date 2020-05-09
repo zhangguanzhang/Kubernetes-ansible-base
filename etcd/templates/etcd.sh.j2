@@ -15,3 +15,7 @@ alias etcd_v3="ETCDCTL_API=3 \
    --key ${ETCD_CERET_DIR}/${ETCD_KEY_FILE} \
    --cacert ${ETCD_CERET_DIR}/${ETCD_CA_FILE} \
     --endpoints $ETCD_EP"
+
+function etcd-ha(){
+    etcd_v3 endpoint status --write-out=table
+}
