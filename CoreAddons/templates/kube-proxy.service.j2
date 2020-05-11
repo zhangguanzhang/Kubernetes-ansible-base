@@ -6,6 +6,7 @@ After=network.target
 [Service]
 ExecStart=/usr/local/bin/kube-proxy \
   --hostname-override={{ nodename | lower }} \
+  --config=/etc/kubernetes/kube-proxy.conf \
 {% if proxy.logrotate.log is defined and proxy.logrotate.log %}
   --logtostderr=false \
   --log-dir={{ proxy.logrotate.logDir }} \
