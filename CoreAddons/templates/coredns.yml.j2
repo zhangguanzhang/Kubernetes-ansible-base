@@ -125,7 +125,7 @@ spec:
         beta.kubernetes.io/os: linux
       containers:
       - name: coredns
-        image: coredns/coredns:1.6.3
+        image: coredns/coredns:{{ coredns_version }}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -180,6 +180,7 @@ spec:
             path: /etc/localtime
         - name: config-volume
           configMap:
+            defaultMode: 420
             name: coredns
             items:
             - key: Corefile
