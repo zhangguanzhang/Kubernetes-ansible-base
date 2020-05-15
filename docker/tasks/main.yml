@@ -35,3 +35,4 @@
     remote_src: true
   when: not check_completion_files.stat.exists
 
+- include_tasks: docker-info.yml
