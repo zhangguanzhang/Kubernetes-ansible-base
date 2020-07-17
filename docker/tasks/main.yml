@@ -24,6 +24,8 @@
   notify:
     - restart docker
 
+- meta: flush_handlers
+
 - name: Check if the completion script exists
   stat: path=/etc/bash_completion.d/docker
   register: check_completion_files
