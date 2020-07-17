@@ -1,8 +1,12 @@
+- name: 创建数据目录
+  file: name={{ item }} state=directory mode=u=rwx,g-rwx,o-rwx //3.4.10测试是必须0700权限
+  with_items:
+  - "{{ etcd.dataDir }}"
+
 - name: 创建etcd相关目录
   file: name={{ item }} state=directory
   with_items:
   - /etc/kubernetes/pki/etcd
-  - "{{ etcd.dataDir }}"
   - /etc/etcd
   - "{{ etcd.backup.scriptDir }}"
   - "{{ etcd.backup.dataDir }}"
