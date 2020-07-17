@@ -1,5 +1,5 @@
 - name: 创建数据目录
-  file: name={{ item }} state=directory mode=u=rwx,g-rwx,o-rwx //3.4.10测试是必须0700权限
+  file: name={{ item }} state=directory mode=u=rwx,g-rwx,o-rwx #3.4.10开始是必须0700权限
   with_items:
   - "{{ etcd.dataDir }}"
 
