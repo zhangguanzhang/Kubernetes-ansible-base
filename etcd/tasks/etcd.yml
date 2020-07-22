@@ -1,5 +1,5 @@
-- name: 创建数据目录
-  file: name={{ item }} state=directory mode=u=rwx,g-rwx,o-rwx #3.4.10开始是必须0700权限
+- name: 创建数据目录   # 3.4.10开始是必须0700权限,https://github.com/etcd-io/etcd/blob/master/CHANGELOG-3.4.md#breaking-changes
+  file: name={{ item }} state=directory mode=u=rwx,g-rwx,o-rwx
   with_items:
   - "{{ etcd.dataDir }}"
 
