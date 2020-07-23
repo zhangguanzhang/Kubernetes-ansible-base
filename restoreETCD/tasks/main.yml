@@ -23,6 +23,7 @@
   systemd: name=etcd state=stopped
   ignore_errors: true
 
+
 - name: 删除etcd数据目录
   file: name={{ item }} state=absent
   with_items: "{{ etcd.dataDir }}"
@@ -30,7 +31,7 @@
 
 
 - name: 分发备份文件
-  copy: src={{ db }} dest=/root/
+  copy: src={{ db }} dest=/opt/
 
 
 - name: 恢复备份
@@ -38,7 +39,7 @@
       ETCDCTL_API=3 etcdctl  \
         --name {{ clusterName }} --initial-advertise-peer-urls https://{{ inventory_hostname }}:2380 \
         --initial-cluster {{ init_cluster }} \
-        snapshot restore /root/test.db \
+        snapshot restore /opt/{{ db.split("/")[-1] }} \
         --data-dir=/var/lib/etcd/
 
 - name: 启动etcd
