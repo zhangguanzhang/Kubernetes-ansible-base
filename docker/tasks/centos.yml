@@ -11,7 +11,18 @@
   register: temp_var
 
 - set_fact: 
-    docker_version={{ temp_var.results | map(attribute='version')| list | select('search', docker.version ) | list | last}}
+    docker_version: |-
+      {%- set docker_version_list= temp_var.results | map(attribute='version') | list | select('search', docker.version ) | list  -%}
+      {%- if docker_version_list | length == 1 -%}{{docker_version_list[0]}}
+      {%- else -%}
+        {%- set vmax = {'max': docker.version + '.0'} -%}
+        {%- for ver in docker_version_list -%}
+          {%- if vmax['max'] is version(ver, '<') -%}
+            {%- set _ = vmax.update({"max": ver}) -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {{ vmax['max'] }}
+      {%- endif %}
 
 - name: Check if docker-ce-{{ docker_version }} is installed
   yum: list=docker-ce-{{ docker_version }}

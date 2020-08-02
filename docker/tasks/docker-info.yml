@@ -1,6 +1,5 @@
 - stat: path=/etc/docker/docker-{{ docker.version }}.info
   register: docker_info_file
-- debug: msg={{  docker_info_file}}
 - block:
     - command: docker info
       register: docker_info
