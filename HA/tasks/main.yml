@@ -5,7 +5,7 @@
   package: name=haproxy  state=latest
 
 - name: Send HA configuration file
-  template: src={{ item.src }} dest={{ item.dest }}
+  template: src={{ item.src }} dest={{ item.dest }} mode=0600
   with_items:
   - { src: 'keepalived.conf.j2', dest: '/etc/keepalived/keepalived.conf'}
   - { src: 'check_haproxy.sh.j2', dest: '/etc/keepalived/check_haproxy.sh'}

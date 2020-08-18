@@ -6,7 +6,7 @@
     - version
 
 - name: localhost |渲染etcd.sh到/etc/profile.d/
-  template: src=etcd.sh.j2 dest=/etc/profile.d/etcd.sh
+  template: src=etcd.sh.j2 dest=/etc/profile.d/etcd.sh mode=g=r,o=r
   connection: local
   run_once: true
 
@@ -16,7 +16,10 @@
     - etcd-cli
 
 - name: 渲染etcd备份脚本
-  template: src={{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
+  template: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}"
+    mode: g=r,o=r
   with_items:
   - { src: 'etcd_cron.sh.j2', dest: '{{ etcd.backup.scriptDir }}/'}
   tags:

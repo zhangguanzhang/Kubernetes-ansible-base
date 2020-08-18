@@ -1,6 +1,9 @@
 - block:
     - name: 部署kube-proxy
-      template: src={{ item }} dest=/etc/kubernetes/CoreAddons/{{ item.split('.')[:-1]|join('.') }}
+      template: 
+        src: "{{ item }}"
+        dest: /etc/kubernetes/CoreAddons/{{ item.split('.')[:-1]|join('.') }}
+        mode: '644'
       with_items:
         - kube-proxy.yml.j2
     
@@ -33,7 +36,10 @@
       when: proxy.logrotate.log is defined and proxy.logrotate.log
 
     - name: 分发logrotate配置文件
-      template: src={{ item }} dest=/etc/logrotate.d/{{ item.split('/')[-1] }}
+      template:
+        src: "{{ item }}"
+        dest: /etc/logrotate.d/{{ item.split('/')[-1] }}
+        mode: '644'
       with_items: "{{ proxy.logrotate.confTemplate }}"
       when: proxy.logrotate.log is defined and proxy.logrotate.log
 
@@ -41,9 +47,13 @@
       copy:
         src: /etc/kubernetes/kube-proxy.kubeconfig
         dest: /etc/kubernetes/kube-proxy.kubeconfig
+        mode: '600'
     
-    
-    - template: src={{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
+    - name: 分发kube-proxy配置文件
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}"
+        mode: '644'
       with_items:
         - { src: 'kube-proxy.service.j2', dest: '/usr/lib/systemd/system/' }
         - { src: 'kube-proxy.conf.j2', dest: '/etc/kubernetes/' }

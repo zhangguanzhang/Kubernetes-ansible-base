@@ -2,6 +2,7 @@
   get_url:
     url: http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
     dest: /etc/yum.repos.d/docker-ce.repo 
+    mode: g=r,o=r
   become: yes
 
 - yum: name=yum-utils state=present update_cache=yes

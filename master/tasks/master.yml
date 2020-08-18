@@ -17,24 +17,27 @@
       copy: src=/usr/local/bin/etcdctl dest=/usr/local/bin/etcdctl mode=u+x
     
     - name: etcd非master上跑时分发etcd证书到master成员
-      copy: src={{ item }} dest=/etc/kubernetes/pki/etcd/
+      copy: src={{ item }} dest=/etc/kubernetes/pki/etcd/ mode=0600
       with_fileglob:
         - '/etc/kubernetes/pki/etcd/*'
 
     - name: 渲染etcd.sh到/etc/profile.d/
-      template: src={{ playbook_dir }}/roles/etcd/templates/etcd.sh.j2 dest=/etc/profile.d/etcd.sh
+      template: src={{ playbook_dir }}/roles/etcd/templates/etcd.sh.j2 dest=/etc/profile.d/etcd.sh mode=0644
   when: groups['etcd'] is defined and groups['etcd'] | intersect(groups['master']) | length == 0 #交集为0表示etcd非master上
 
 
 
 - name: 分发证书
-  copy: src={{ item.src }} dest={{item.src}}
+  copy: src={{ item.src }} dest={{item.src}} mode=0600
   with_filetree:
     - '/etc/kubernetes/pki/'
   when: item.state == 'file' and not item.src is search("/kubelet-client.*")
 
 - name: 配置管理组件的systemd文件
-  template: src=master/{{ item }} dest=/usr/lib/systemd/system/{{ item.split('.')[:-1]|join('.') }}
+  template: 
+    src: master/{{ item }}
+    dest: /usr/lib/systemd/system/{{ item.split('.')[:-1]|join('.') }}
+    mode: '644'
   with_items:
     - kube-apiserver.service.j2
     - kube-controller-manager.service.j2
@@ -43,7 +46,7 @@
     - version
 
 - name: 分发管理组件的kubeconfig
-  copy: src=/etc/kubernetes/{{ item }} dest=/etc/kubernetes/
+  copy: src=/etc/kubernetes/{{ item }} dest=/etc/kubernetes/ mode=600
   with_items:
     - admin.kubeconfig
     - controller-manager.kubeconfig
@@ -64,7 +67,7 @@
   connection: local
   run_once: true
   when: not ( redo | default(false) )
-- copy: src={{ item.src }} dest={{ item.dest }}
+- copy: src={{ item.src }} dest={{ item.dest }} mode=0600
   with_items:
   - { src: '/etc/kubernetes/admin.kubeconfig', dest: '~/.kube/config'}
   - { src: 'healthz-rbac.yml', dest: '/etc/kubernetes/'}
@@ -77,6 +80,7 @@
     src: /etc/kubernetes/admin.kubeconfig
     dest: ~/.kube/config
     remote_src: true
+    mode: '600'
 
 - name: 设置kubectl
   shell: |
@@ -95,7 +99,7 @@
     - version
 
 - name: 渲染kube-ep.yml文件
-  template: src={{ item }} dest=/etc/kubernetes/{{ item.split('.')[:-1]|join('.') }}
+  template: src={{ item }} dest=/etc/kubernetes/{{ item.split('.')[:-1]|join('.') }} mode=0644
   with_items:
     - kube-ep.yml.j2
   connection: local

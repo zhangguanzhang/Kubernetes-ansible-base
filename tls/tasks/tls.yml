@@ -1,5 +1,8 @@
 - name: 渲染ip到openssl配置文件
-  template: src=templates/openssl.cnf.j2 dest=/etc/kubernetes/pki/openssl.cnf
+  template: 
+    src: templates/openssl.cnf.j2
+    dest: /etc/kubernetes/pki/openssl.cnf
+    mode: g=r,o=r
   
 - name: kubernetes-ca
   shell: |

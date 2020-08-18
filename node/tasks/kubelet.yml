@@ -38,7 +38,10 @@
   when: kubelet.logrotate.log is defined and kubelet.logrotate.log 
 
 - name: 渲染kubelet的logrotate配置文件
-  template: src=templates/{{ item }} dest=/etc/logrotate.d/{{ item.split('/')[-1] }}
+  template: 
+    src: templates/{{ item }}
+    dest: /etc/logrotate.d/{{ item.split('/')[-1] }}
+    mode: '644'
   with_items: "{{ kubelet.logrotate.confTemplate }}"
   when: kubelet.logrotate.log is defined and kubelet.logrotate.log
 
@@ -48,13 +51,16 @@
   register: CgroupDriver
    
 - name: 配置kubelet
-  template: src=node/{{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
+  template:
+    src: node/{{ item.src }}
+    dest: "{{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}"
+    mode: '644'
   with_items:
     - { src: 'kubelet.service.j2', dest: "/lib/systemd/system/" }
     - { src: 'kubelet-conf.yml.j2', dest: "/etc/kubernetes/" }
 
 - name: 分发kubelet相关证书
-  copy: src={{ item }} dest={{ item }}
+  copy: src={{ item }} dest={{ item }} mode='600'
   with_items:
     - /etc/kubernetes/pki/ca.crt
     - /etc/kubernetes/bootstrap.kubeconfig

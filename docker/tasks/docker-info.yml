@@ -7,5 +7,6 @@
         path: /etc/docker/docker-{{ docker.version }}.info
         create: yes
         block: "{{ docker_info.stdout }}"
+        mode: g=r,o=r
 
   when: not docker_info_file.stat.exists

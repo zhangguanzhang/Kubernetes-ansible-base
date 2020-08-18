@@ -1,6 +1,9 @@
 - block:
     - name: 渲染kube-flannel.yml文件模板
-      template: src={{ item }} dest=/etc/kubernetes/CoreAddons/{{ item.split('.')[:-1]|join('.') }}
+      template: 
+        src: "{{ item }}"
+        dest: /etc/kubernetes/CoreAddons/{{ item.split('.')[:-1]|join('.') }}
+        mode: '644'
       with_items:
         - 'kube-flannel.yml.j2'
     
@@ -39,9 +42,13 @@
       copy:
         src: /etc/kubernetes/flanneld.kubeconfig
         dest: /etc/kubernetes/flanneld.kubeconfig
+        mode: '600'
     
-    
-    - template: src={{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
+    - name: 分发flannel配置文件
+      template: 
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}"
+        mode: '644'
       with_items:
         - { src: 'flanneld.service.j2', dest: '/usr/lib/systemd/system' }
         - { src: '10-flannel.conflist.j2', dest: '/etc/cni/net.d' }

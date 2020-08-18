@@ -15,7 +15,10 @@
 
 - block:
     - name: 渲染coredns,metrics-server文件模板
-      template: src={{ item }} dest=/etc/kubernetes/CoreAddons/{{ item.split('.')[:-1]|join('.') }}
+      template:
+        src: "{{ item }}"
+        dest: /etc/kubernetes/CoreAddons/{{ item.split('.')[:-1]|join('.') }}
+        mode: '644'
       with_items:
         - 'coredns.yml.j2'
         - 'metrics-server.yml.j2'

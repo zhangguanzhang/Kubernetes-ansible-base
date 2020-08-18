@@ -17,7 +17,7 @@
   when: ansible_os_family == "RedHat" and docker_Install_condition
 
 - name: send the config file
-  template: src={{ item.src }} dest={{ item.dest }}
+  template: src={{ item.src }} dest={{ item.dest }} mode=g=r,o=r
   with_items:
   - { src: 'daemon.json.j2', dest: '/etc/docker/daemon.json' }
   - { src: '10-docker.conf.j2', dest: '/etc/systemd/system/docker.service.d/10-docker.conf' }
@@ -35,6 +35,7 @@
     src: /usr/share/bash-completion/completions/docker
     dest: /etc/bash_completion.d/docker
     remote_src: true
+    mode: g=r,o=r
   when: not check_completion_files.stat.exists
 
 - include_tasks: docker-info.yml
