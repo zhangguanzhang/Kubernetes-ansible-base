@@ -13,6 +13,13 @@
     backrefs: yes
   when: not kubelet.swap
 
+- name: 去掉 /tmp 目录的 noexec 选项 | 否则docker-compose运行会报错
+  lineinfile:
+    dest: /etc/fstab
+    regexp: '(^\s*[^#].+?\s+/tmp\s+.+?)noexec(.+$)'
+    line: '\1exec\2'
+    backrefs: yes
+
 - name: 分发modules-load和sysctl的conf
   copy:
     src: files/{{ item.src }}
