@@ -1,3 +1,9 @@
+- name: 创建必要目录
+  file: name=/etc/systemd/network/ state=directory mode=0755
+
+- name: 拷贝flanneld systemd link 文件
+  copy: src=flannel.link dest=/etc/systemd/network/10-flannel.link mode=0644
+
 - block:
     - name: 渲染kube-flannel.yml文件模板
       template: 
@@ -23,7 +29,11 @@
         - /etc/cni/net.d
         - /run/flannel
         - /etc/kube-flannel/
+        - /etc/systemd/network/
     
+    - name: 分发flanneld二进制文件
+      copy: src=flannel.link dest=/etc/systemd/network/10-flannel.link mode=0644
+
     - name: 分发flanneld二进制文件
       copy: 
         src: /usr/local/bin/flanneld
