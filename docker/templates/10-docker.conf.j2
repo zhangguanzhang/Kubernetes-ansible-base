@@ -1,6 +1,8 @@
 [Service]
-ExecStartPost=/sbin/iptables -I FORWARD -s 0.0.0.0/0 -j ACCEPT
-ExecStopPost=/bin/bash -c '/sbin/iptables -D FORWARD -s 0.0.0.0/0 -j ACCEPT &> /dev/null || :'
+ExecStartPost=/sbin/iptables --wait -I FORWARD -s 0.0.0.0/0 -j ACCEPT
+ExecStopPost=/bin/bash -c '/sbin/iptables --wait -D FORWARD -s 0.0.0.0/0 -j ACCEPT &> /dev/null || :'
+ExecStartPost=/sbin/iptables --wait -I INPUT -i cni0 -j ACCEPT
+ExecStopPost=/bin/bash -c '/sbin/iptables --wait -D INPUT -i cni0 -j ACCEPT &> /dev/null || :'
 {% if docker.Environments is defined %}{% for env in docker.Environments %}
 Environment="{{ env }}"
 {% endfor %}
