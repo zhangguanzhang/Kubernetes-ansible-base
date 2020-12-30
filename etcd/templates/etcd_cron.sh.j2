@@ -79,6 +79,7 @@ etcd::cron::save(){
 }
 
 main(){
+    endpoints=$(etcd_v3 endpoint status 2>/dev/null | head -1 | cut -d, -f1)
     [ -n "$bak_count" ] && etcd::cron::save || etcd_v3 snapshot save $@
 }
 
