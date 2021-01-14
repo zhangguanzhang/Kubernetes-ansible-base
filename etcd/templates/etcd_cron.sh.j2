@@ -79,6 +79,8 @@ etcd::cron::save(){
 }
 
 main(){
+    # 部分版本备份只能指定一个节点
+    endpoints=$(etcd_v3 endpoint status 2>/dev/null | head -1 | cut -d, -f1)
     [ -n "$bak_count" ] && etcd::cron::save || etcd_v3 snapshot save $@
 }
 
