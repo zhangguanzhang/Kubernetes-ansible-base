@@ -1,3 +1,8 @@
+- name: prepare some dirs
+  file: name={{ item }} state=directory
+  with_items:
+  - /etc/NetworkManager/conf.d/
+
 - include_tasks: centos.yml
   when: ansible_os_family == "RedHat"
 
@@ -20,7 +25,7 @@
     line: '\1exec\2'
     backrefs: yes
 
-- name: 分发modules-load和sysctl的conf
+- name: 分发modules-load,sysctl,NetworkManager的conf
   copy:
     src: files/{{ item.src }}
     dest: "{{ item.dest }}"
@@ -28,6 +33,7 @@
   with_items:
     - { src: 'k8s-ipvs.conf', dest: "/etc/modules-load.d/" }
     - { src: 'kubernetes.conf', dest: "/etc/security/limits.d/" }
+    - { src: 'k8s-NetworkManager.conf', dest: "/etc/NetworkManager/conf.d/k8s.conf" }
 
 - name: Send sysctl file
   template:
