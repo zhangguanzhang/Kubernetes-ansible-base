@@ -10,6 +10,20 @@
   timezone: name="{{ TimeZone }}"
   when: TimeZone is defined
 
+- name: get value for fs.file-max
+  command: sysctl -n fs.file-max
+  register: file_max
+- name: set fs.file-max
+  sysctl:
+    name: fs.file-max
+    value: "{{ fs_file_max }}"
+    state: present
+    reload: yes
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.conf
+  when: 
+    - file_max.stdout | int < fs_file_max
+
 - name: 修改fstab文件关闭swap
   lineinfile:
     dest: /etc/fstab     

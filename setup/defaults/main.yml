@@ -1,0 +1,3 @@
+# https://zhangguanzhang.github.io/2019/05/11/container-too-many-open-file/
+fs_file_max: 2097152
+
