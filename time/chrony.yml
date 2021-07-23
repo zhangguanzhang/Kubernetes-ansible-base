@@ -8,6 +8,11 @@
 - name: Send chrony configuration file
   template: src=common/time/chrony.conf.j2 dest=/etc/chrony.conf
 
+- name: disable rtc local
+  shell: |
+    command -v timedatectl &>/dev/null && timedatectl set-local-rtc 0
+  ignore_errors: true
+
 - name: add crontab for chrony
   cron:
     name: "chrony crontab restart"
@@ -15,3 +20,4 @@
     hour: "3"
     job: "systemctl restart chronyd"
 # ubuntu's name is chrony not chronyd
+

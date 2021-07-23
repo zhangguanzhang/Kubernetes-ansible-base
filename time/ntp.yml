@@ -8,6 +8,11 @@
 - name: Send ntp configuration file
   template: src=common/time/ntp.conf.j2 dest=/etc/ntp.conf
 
+- name: "disable rtc local"
+  shell: |
+    command -v timedatectl &>/dev/null && timedatectl set-local-rtc 0
+  ignore_errors: true
+
 - name: 设置ntpd开机并启动
   systemd: name=ntpd enabled=yes
 
